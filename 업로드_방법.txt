@@ -7,5 +7,4 @@
 5. 작업 화면 아래 Artifacts의 GwangjeBoard-Windows-Installer를 다운로드합니다.
 6. 압축을 풀고 GwangjeBoard-Setup-1.0.0.exe를 실행합니다.
 
-데이터 저장 위치:
-문서\광제보드\gwangje-board-data.json
+입력 자료는 Windows의 광제보드 전용 앱 데이터 영역에 자동 저장됩니다.
