@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#079bd3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="동산 보드판">
+<link rel="manifest" href="manifest.webmanifest">
+<title>동산 사진 보드판</title>
+<style>
+*{box-sizing:border-box}
+:root{--navy:#123d72;--blue:#4c9de8;--line:#b9d2ec;--glass:rgba(255,255,255,.58);--shadow:0 12px 30px rgba(39,79,122,.16)}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#17375f;min-height:100vh;background:
+ radial-gradient(circle at 12% 8%,rgba(255,255,255,.98) 0 9%,transparent 30%),
+ radial-gradient(circle at 86% 20%,rgba(255,255,255,.9) 0 8%,transparent 28%),
+ linear-gradient(135deg,#eef7ff 0%,#ffffff 38%,#e7f3ff 68%,#fdfefe 100%);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;background:
+ linear-gradient(118deg,transparent 0 47%,rgba(213,177,96,.24) 48%,transparent 49% 100%),
+ radial-gradient(circle at 78% 72%,rgba(255,255,255,.9) 0 2px,transparent 3px),
+ radial-gradient(circle at 18% 82%,rgba(255,255,255,.95) 0 2px,transparent 3px);background-size:auto,90px 90px,120px 120px}
+.wrap{max-width:760px;margin:auto;padding:14px;position:relative}
+.card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(239,248,255,.64));border:1px solid rgba(255,255,255,.95);border-radius:22px;padding:16px;box-shadow:var(--shadow),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(128,166,204,.25);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);margin-bottom:14px}
+.card:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,transparent 0 40%,rgba(255,255,255,.42) 49%,transparent 58%);opacity:.35}
+h1{font-size:22px;margin:2px 0 16px;color:#0d3d73;text-shadow:0 1px 0 #fff}
+.grid{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:center;position:relative;z-index:1}
+label{font-weight:800;color:#163c69;display:flex;align-items:center;gap:7px;white-space:nowrap}
+label:before{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:10px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(213,234,255,.72));border:1px solid rgba(255,255,255,.95);box-shadow:0 5px 10px rgba(55,105,155,.18),inset 0 1px 2px #fff;font-size:17px}
+.grid>label:nth-of-type(1):before{content:"🏠"}.grid>label:nth-of-type(2):before{content:"🏢"}.grid>label:nth-of-type(3):before{content:"📍"}.grid>label:nth-of-type(4):before{content:"📄"}.grid>label:nth-of-type(5):before{content:"📅"}
+input,select,button{font:inherit;min-height:45px;border:1px solid rgba(139,170,202,.55);border-radius:14px;padding:8px 12px;background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(232,243,255,.68));color:#17375f;box-shadow:inset 0 1px 1px #fff,0 4px 9px rgba(57,93,131,.10);outline:none}
+input:focus,select:focus{border-color:#77afe4;box-shadow:0 0 0 3px rgba(92,158,222,.14),inset 0 1px 1px #fff}
+.row{display:flex;gap:8px}.row>*{flex:1}.grid>.row{width:min(100%,330px)}.grid>input[type="date"]{width:min(100%,230px)}.grid>.row input{min-width:0;width:100%}.grid>.row button{flex-shrink:0}
+button{font-weight:800;cursor:pointer;position:relative;overflow:hidden;text-shadow:0 1px 0 #fff;transition:transform .08s ease,box-shadow .08s ease;background:linear-gradient(155deg,rgba(255,255,255,.96),rgba(215,234,253,.72));box-shadow:0 7px 14px rgba(43,90,139,.16),inset 0 2px 2px #fff,inset 0 -2px 3px rgba(95,140,185,.16)}
+button:before{content:"";position:absolute;left:8%;right:8%;top:5px;height:32%;border-radius:999px;background:linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,0));pointer-events:none}
+button:active{transform:translateY(2px);box-shadow:0 3px 7px rgba(43,90,139,.14),inset 0 1px 3px rgba(54,92,130,.18)}
+.primary{color:#fff;border-color:#5ca7ec;background:linear-gradient(180deg,#6fc0ff 0%,#208fe8 48%,#0874cf 100%);text-shadow:0 1px 2px rgba(0,46,96,.55);box-shadow:0 8px 16px rgba(17,116,202,.28),inset 0 2px 2px rgba(255,255,255,.75),inset 0 -3px 4px rgba(0,74,150,.24)}
+.dark{color:#fff;border-color:#52677e;background:linear-gradient(180deg,#637387 0%,#26384e 50%,#14263c 100%);text-shadow:0 1px 2px #0008;box-shadow:0 8px 16px rgba(15,39,65,.25),inset 0 2px 2px rgba(255,255,255,.42),inset 0 -3px 4px rgba(0,0,0,.22)}
+.small{font-size:13px;color:#526b84;margin:9px 0 0;line-height:1.55}
+details{position:relative;z-index:1;border-top:1px solid rgba(151,181,211,.3);padding-top:6px}
+summary{list-style:none!important;display:flex;align-items:center;gap:8px;color:#163c69}
+summary::-webkit-details-marker{display:none}
+summary:before{content:"▶";display:inline-grid;place-items:center;width:31px;height:31px;border-radius:50%;font-size:14px;color:#197ad0;background:linear-gradient(145deg,#fff,rgba(202,229,255,.78));border:1px solid #c3dcf4;box-shadow:0 5px 10px rgba(51,99,148,.18),inset 0 2px 2px #fff;text-shadow:0 1px 1px #fff;transition:transform .18s}
+details[open]>summary:before{transform:rotate(90deg)}
+.previewBox{position:relative;background:linear-gradient(145deg,rgba(244,249,255,.76),rgba(219,234,249,.66));border:1px solid rgba(255,255,255,.95);min-height:clamp(180px,38vh,260px);display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:18px;box-shadow:inset 0 2px 8px rgba(76,115,155,.10),0 5px 14px rgba(52,91,132,.10);color:#294f77}
+.previewBox:before{content:"📷";position:absolute;top:28%;font-size:38px;opacity:.35;filter:drop-shadow(0 2px 2px #fff)}
+.previewBox #empty{margin-top:54px;position:relative;z-index:1}.previewBox.has-photo{min-height:0;height:auto;background:transparent}.previewBox.has-photo:before{display:none}
+#preview{display:none;max-width:100%;max-height:65vh}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;position:relative;z-index:1}.buttons button{min-height:54px;border-radius:18px}
+#resultCanvas{display:none;width:100%;height:auto;max-width:100%;border-radius:16px;vertical-align:top}
+dialog{border:1px solid rgba(255,255,255,.9);border-radius:20px;width:min(92vw,480px);padding:16px;background:rgba(246,251,255,.94);box-shadow:0 18px 50px #17375f55}dialog::backdrop{background:#102a4666;backdrop-filter:blur(3px)}.optgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.optgrid button{background:linear-gradient(145deg,#fff,#e5f2ff)}
+#clearUnit{background:linear-gradient(145deg,#fff,#dceeff)!important;color:#17375f;box-shadow:0 5px 10px rgba(44,91,137,.18),inset 0 2px 2px #fff!important}
+@media(max-width:600px){.wrap{padding:8px}.grid{grid-template-columns:92px minmax(0,1fr);gap:8px}.card{padding:12px;border-radius:18px}.buttons{grid-template-columns:1fr}.grid>.row{width:min(100%,300px)}.grid>input[type="date"]{width:min(100%,220px)}label:before{width:27px;height:27px;font-size:15px}}
+@media(max-width:380px){.grid{grid-template-columns:84px minmax(0,1fr);gap:6px}.grid>.row{width:100%}.grid>.row button{flex-basis:64px!important}input,select,button{padding:7px}.card{padding:9px}label{gap:4px;font-size:14px}label:before{width:24px;height:24px;font-size:13px}}
+.grid>#extraRows{display:contents}
+#extraRows>.dynamicRow{width:min(100%,330px)}
+#extraRows>.dynamicRow input{min-width:0;width:100%}
+#extraRows>.dynamicRow button{flex-shrink:0}
+@media(max-width:600px){#extraRows>.dynamicRow{width:min(100%,300px)}}
+@media(max-width:380px){#extraRows>.dynamicRow{width:100%}}
+.grid label[data-icon]:before{content:attr(data-icon)!important}
+.itemEditor .iconSelect{flex:0 0 112px;min-width:0;text-align:center;padding-left:7px;padding-right:7px}
+@media(max-width:600px){.itemEditor .iconSelect{flex-basis:92px;font-size:14px}.itemEditor .row{gap:5px}.itemEditor .row input{min-width:0}}
+@media(max-width:380px){.itemEditor .iconSelect{flex-basis:78px;font-size:13px}.itemEditor .row button{flex-basis:52px!important}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="card">
+  <h1>📷 동산 사진 보드판</h1>
+  <div class="grid">
+   <label id="label_unit">동·호수</label>
+<div class="row">
+ <input id="unit" inputmode="text" placeholder="예: 5101 → 설정값+5동 101호">
+ <button type="button" id="clearUnit" title="동·호수 지우기" aria-label="동·호수 지우기"
+ style="flex:0 0 38px;min-height:38px;height:38px;padding:0;font-size:18px;border-radius:50%;align-self:center">×</button>
+</div>
+   <label id="label_status">입 퇴 공</label><div class="row"><button type="button" onclick="pick('status')" style="flex:0 0 72px">목록</button><input id="status" placeholder="선택 또는 직접 입력"></div>
+   <label id="label_place">위치</label><div class="row"><button type="button" onclick="pick('place')" style="flex:0 0 72px">목록</button><input id="place" placeholder="선택 또는 직접 입력"></div>
+   <label id="label_work">내용</label><div class="row"><button type="button" onclick="pick('work')" style="flex:0 0 72px">목록</button><input id="work" placeholder="선택 또는 직접 입력"></div>
+   <label id="label_date">일자</label><input id="date" type="date">
+   <div id="extraRows" style="display:contents"></div>
+  </div>
+  <p class="small">입·퇴공별로 위치 목록이 따로 저장되고, 각 위치별로 내용 목록도 다시 따로 저장됩니다. 직접 입력한 항목은 현재 선택한 입·퇴공/위치에만 자동 추가되며 × 버튼으로 삭제할 수 있습니다.</p>
+<details style="margin-top:10px">
+ <summary style="font-weight:700;cursor:pointer">⚙ 현장 동번호 설정</summary>
+ <div class="row" style="margin-top:8px">
+  <input id="dongPrefix" inputmode="numeric" placeholder="고정 앞자리 (현재 190)">
+  <button type="button" id="saveDongPrefix" style="flex:0 0 70px">저장</button>
+ </div>
+ <p class="small">현재 190으로 두면 5101 → 1905동 101호. 다른 현장에서는 고정 앞자리만 바꾸면 됩니다. 이 설정 영역은 사진에 나오지 않습니다.</p>
+</details>
+<details style="margin-top:10px" id="boardSettings">
+ <summary style="font-weight:700;cursor:pointer">⚙ 보드판 설정</summary>
+ <div class="itemEditor" style="margin-top:10px;padding:10px;border:1px solid rgba(120,160,210,.35);border-radius:14px;background:rgba(255,255,255,.35)">
+  <div style="font-weight:800;margin-bottom:7px">보드판 항목 설정 (1~10칸)</div>
+  <div id="itemEditorRows"></div>
+  <div class="buttons" style="margin-top:8px"><button type="button" id="addBoardItem">＋ 항목 추가</button></div>
+  <p class="small">항목 이름과 왼쪽 아이콘을 직접 선택할 수 있습니다. 추가한 항목은 직접 입력칸으로 생성되며 사진 합성 보드판에도 그대로 반영됩니다.</p>
+ </div>
+ <div class="grid" style="margin-top:10px">
+  <label>폰트 크기</label><div class="row"><input id="fontScale" type="range" min="70" max="150" step="5" value="100"><span id="fontScaleText" style="flex:0 0 54px;align-self:center;text-align:right">100%</span></div>
+   <label>박스 좌우 크기</label><div class="row"><input id="boardWidthScale" type="range" min="50" max="150" step="5" value="100"><span id="boardWidthScaleText" style="flex:0 0 54px;align-self:center;text-align:right">100%</span></div>
+   <label>박스 상하 크기</label><div class="row"><input id="boardHeightScale" type="range" min="50" max="150" step="5" value="100"><span id="boardHeightScaleText" style="flex:0 0 54px;align-self:center;text-align:right">100%</span></div>
+  <label>사진 해상도</label><select id="photoResolution"><option value="1200">1200px (용량 최소)</option><option value="1600" selected>1600px (권장)</option><option value="2048">2048px</option><option value="2560">2560px (고화질)</option><option value="0">원본 유지</option></select>
+  <label>저장 품질</label><select id="jpegQuality"><option value="0.65">65% (작은 용량)</option><option value="0.80" selected>80% (권장)</option><option value="0.90">90% (고화질)</option><option value="0.95">95% (최고화질)</option></select>
+  <label>보드판 위치</label><select id="boardPosition"><option value="bl" selected>좌측 하단</option><option value="br">우측 하단</option><option value="tl">좌측 상단</option><option value="tr">우측 상단</option></select>
+  <label>보드판 색상</label><select id="boardColor"><option value="white" selected>흰색</option><option value="transparent">반투명</option><option value="frame">프레임만</option></select>
+  <label>보드판 폰트</label><select id="boardFont"><option value="Malgun Gothic" selected>시스템 기본</option><option value="sans-serif">고딕</option><option value="serif">명조</option></select>
+ </div>
+ <div class="buttons"><button type="button" id="resetBoardSettings">기본값 복원</button></div>
+ <p class="small">카메라 원본 해상도는 휴대폰 카메라가 결정합니다. 여기서는 촬영 후 앱에서 저장할 사진 크기와 품질을 자동으로 줄입니다.</p>
+</details>
+ </div>
+
+ <div class="card">
+   <input id="camera" type="file" accept="image/*" capture="environment" hidden>
+   <input id="gallery" type="file" accept="image/*" hidden>
+   <div class="buttons">
+    <button class="primary" onclick="camera.click()">📷 촬영 → 자동합성·저장</button>
+    <button onclick="gallery.click()">🖼 불러오기 → 자동합성·저장</button>
+   </div>
+ </div>
+
+ <div class="card">
+  <div class="previewBox" id="previewBox"><span id="empty">사진을 촬영하면 여기에 표시됩니다.</span><img id="preview"></div>
+  <canvas id="resultCanvas"></canvas>
+  <div class="buttons">
+   <button class="dark" onclick="makeImage()">다시 합성</button>
+   <button class="primary" onclick="saveImage()">다시 저장</button>
+  </div>
+  <p class="small">촬영하면 설정한 해상도·품질로 자동 축소한 뒤 보드판을 합성하고 JPG로 저장합니다.</p>
+ </div>
+</div>
+
+<dialog id="dlg">
+ <h3 id="dlgTitle">목록 선택</h3>
+ <div class="optgrid" id="opts"></div>
+ <div class="row" style="margin-top:12px"><button onclick="dlg.close()">취소</button></div>
+</dialog>
+
+<script>
+const appStorage=window.desktopStorage||window.localStorage;
+const defaults={
+ status:["입주","퇴거","공가"],
+ place:["현관","주방","화장실","침실1","침실2","거실","발코니","실외기실","빌트인","지급품목"],
+ work:[]
+};
+const presetWorkMap={"현관":["현관문 타공","현관문 휨","기존 도어락 고장","안전고리 파손","소화기 분실","벽지훼손","벽지오염","천장 벽지훼손","천장 벽지오염","신발장 벽지훼손","신발장 벽지오염","신발장 천장 벽지훼손","신발장 천장 벽지오염","바닥 타일깨짐"],"주방":["벽지훼손","벽지오염","천장 벽지훼손","천장 벽지오염","장판눌림","장판찢김","장판오염","수전 파손","벽 타일 훼손","싱크대 상부 훼손","싱크대 상부 타공","상부장 파손"],"화장실":["수건걸이 파손","휴지걸이 파손","욕실장 파손","욕실장 거울 갈변","거울 파손","세면 수전고장","샤워 수전고장","양변기 커버 파손","코너선반 파손","바닥 타일깨짐","벽 타일깨짐"],"침실1":["벽지훼손","벽지오염","천장 벽지훼손","전장 벽지오염","장판눌림","장판찢김","장판오염","온도조절기 파손","PL창호 깨짐 및 파손"],"침실2":["벽지훼손","벽지오염","천장 벽지훼손","전장 벽지오염","장판눌림","장판찢김","장판오염","온도조절기 파손","PL창호 깨짐 및 파손"],"거실":["벽지훼손","벽지오염","천장 벽지훼손","전장 벽지오염","장판눌림","장판찢김","장판오염","분합창호 판손 및 깨짐","스마트 스위치 파손","월패드 파손"],"발코니":["천장 석고보드 타공 및 파손","페인트 벗겨짐","스프레이건 파손 및 분실","배수구 엘보 파손 및 분실","2단선반 파손","커플링 분실 1개","커플링 분실 2개","타일 들뜸"],"실외기실":["창호, 방충망 파손","손잡이 레버 파손"],"빌트인":["쿡탑 고장","냉장고 고장"],"지급품목":["현관열쇠 1개 분실","현관열쇠 2개 분실","공동현관문 카드 (대) 1개 분실","공동현관문 카드 (대) 2개 분실","공동현관문 카드 (소) 1개 분실","공동현관문 카드 (소) 2개 분실","공동현관문 카드 (대)1, (소)1 분실","공동현관문 카드 (대)2, (소)1 분실","공동현관문 카드 (대)1, (소)2 분실","음식물 카드 분실","거실등 리모컨 분실"]};
+function storageKey(id){
+ if(id==="status") return "board_list_status_v6";
+ const s=($("status")?.value||"미지정").trim()||"미지정";
+ if(id==="place") return "board_v6_list_place_status_"+encodeURIComponent(s);
+ const p=($("place")?.value||"미지정").trim()||"미지정";
+ return "board_v6_list_work_status_"+encodeURIComponent(s)+"_place_"+encodeURIComponent(p);
+}
+function getList(id){
+ const key=storageKey(id);
+ try{const saved=appStorage.getItem(key);if(saved!==null)return JSON.parse(saved);}catch(e){}
+ let initial=[...defaults[id]];
+ if(id==="work"){
+   const p=($("place")?.value||"").trim();
+   initial=presetWorkMap[p]?[...presetWorkMap[p]]:[];
+ }
+ appStorage.setItem(key,JSON.stringify(initial));return initial;
+}
+function saveList(id,a){appStorage.setItem(storageKey(id),JSON.stringify([...new Set(a)]));}
+function addCustom(id,value){
+ value=(value||"").trim();if(!value)return;
+ const a=getList(id);if(!a.includes(value)){a.push(value);saveList(id,a);}
+}
+function removeCustom(id,value){saveList(id,getList(id).filter(v=>v!==value));}
+
+let currentTarget=null,img=new Image(),hasImage=false,made=false;
+const $=id=>document.getElementById(id);
+const dlg=$("dlg");
+function getLocalDateValue(){
+ const now=new Date();
+ const y=now.getFullYear();
+ const m=String(now.getMonth()+1).padStart(2,"0");
+ const d=String(now.getDate()).padStart(2,"0");
+ return `${y}-${m}-${d}`;
+}
+function refreshTodayDate(){
+ const today=getLocalDateValue();
+ if($("date").value!==today) $("date").value=today;
+}
+refreshTodayDate();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshTodayDate();});
+setInterval(refreshTodayDate,60000);
+
+// ===== 보드판 항목 이름/칸수 편집 =====
+const BOARD_ICON_OPTIONS=[
+ {icon:"💎",name:"기본"},{icon:"⭐",name:"중요"},{icon:"✅",name:"완료"},{icon:"☑️",name:"확인"},{icon:"❌",name:"불량"},
+ {icon:"⚠️",name:"주의"},{icon:"🚨",name:"긴급"},{icon:"❗",name:"필수"},{icon:"❓",name:"문의"},{icon:"🔔",name:"알림"},
+ {icon:"🏠",name:"집"},{icon:"🏢",name:"건물"},{icon:"🏬",name:"상가"},{icon:"🏗️",name:"공사"},{icon:"🏘️",name:"주택"},
+ {icon:"🏡",name:"주거"},{icon:"🏭",name:"시설"},{icon:"🏚️",name:"노후"},{icon:"⛺",name:"임시"},{icon:"🛖",name:"창고"},
+ {icon:"🚪",name:"문"},{icon:"🪟",name:"창문"},{icon:"🧱",name:"벽"},{icon:"🛗",name:"승강기"},{icon:"🪜",name:"사다리"},
+ {icon:"🛏️",name:"침실"},{icon:"🛋️",name:"거실"},{icon:"🪑",name:"가구"},{icon:"🚽",name:"화장실"},{icon:"🛁",name:"욕실"},
+ {icon:"🚿",name:"샤워"},{icon:"🧺",name:"세탁"},{icon:"🧹",name:"청소"},{icon:"🧽",name:"세척"},{icon:"🗑️",name:"폐기"},
+ {icon:"📍",name:"위치"},{icon:"🗺️",name:"지도"},{icon:"🧭",name:"방향"},{icon:"⬆️",name:"상부"},{icon:"⬇️",name:"하부"},
+ {icon:"⬅️",name:"좌측"},{icon:"➡️",name:"우측"},{icon:"↔️",name:"좌우"},{icon:"↕️",name:"상하"},{icon:"🎯",name:"지점"},
+ {icon:"📄",name:"문서"},{icon:"📋",name:"점검표"},{icon:"📝",name:"메모"},{icon:"✏️",name:"기록"},{icon:"📌",name:"고정"},
+ {icon:"📎",name:"첨부"},{icon:"📁",name:"폴더"},{icon:"🗂️",name:"분류"},{icon:"🏷️",name:"표시"},{icon:"🔖",name:"책갈피"},
+ {icon:"📅",name:"일자"},{icon:"🗓️",name:"일정"},{icon:"⏰",name:"시간"},{icon:"⌛",name:"대기"},{icon:"⏱️",name:"작업시간"},
+ {icon:"🔧",name:"수리"},{icon:"🛠️",name:"공구"},{icon:"🔨",name:"망치"},{icon:"🪛",name:"드라이버"},{icon:"🗜️",name:"고정공구"},
+ {icon:"⚙️",name:"설정"},{icon:"⛏️",name:"파기"},{icon:"🪚",name:"절단"},{icon:"✂️",name:"절단도구"},{icon:"📏",name:"길이"},
+ {icon:"📐",name:"각도"},{icon:"🧰",name:"공구함"},{icon:"🦺",name:"작업"},{icon:"👷",name:"작업자"},{icon:"🚧",name:"통제"},
+ {icon:"💡",name:"전기"},{icon:"🔌",name:"콘센트"},{icon:"🔋",name:"배터리"},{icon:"⚡",name:"전력"},{icon:"🕯️",name:"조명"},
+ {icon:"💧",name:"수도"},{icon:"🚰",name:"수전"},{icon:"🪠",name:"배수"},{icon:"🌡️",name:"온도"},{icon:"🔥",name:"난방"},
+ {icon:"❄️",name:"냉방"},{icon:"💨",name:"환기"},{icon:"🌀",name:"공조"},{icon:"☀️",name:"채광"},{icon:"☔",name:"누수"},
+ {icon:"🔑",name:"열쇠"},{icon:"🔒",name:"잠금"},{icon:"🔓",name:"해제"},{icon:"🪪",name:"카드"},{icon:"🔐",name:"보안"},
+ {icon:"📷",name:"사진"},{icon:"📹",name:"영상"},{icon:"🖼️",name:"이미지"},{icon:"🔍",name:"확대"},{icon:"🔎",name:"검사"},
+ {icon:"📦",name:"물품"},{icon:"🧯",name:"소화기"},{icon:"🧲",name:"부착"},{icon:"🪞",name:"거울"},{icon:"🧴",name:"용품"},
+ {icon:"🧊",name:"냉장"},{icon:"🍳",name:"주방"},{icon:"🧼",name:"비누"},{icon:"🪣",name:"물통"},{icon:"🧻",name:"휴지"},
+ {icon:"🔴",name:"빨강"},{icon:"🟠",name:"주황"},{icon:"🟡",name:"노랑"},{icon:"🟢",name:"초록"},{icon:"🔵",name:"파랑"},
+ {icon:"🟣",name:"보라"},{icon:"⚫",name:"검정"},{icon:"⚪",name:"흰색"},{icon:"🔺",name:"삼각"},{icon:"🔷",name:"마름모"}
+];
+const DEFAULT_BOARD_ITEMS=[
+ {key:"unit",name:"동·호수",icon:"🏠",fixed:true},
+ {key:"status",name:"입 퇴 공",icon:"🏢",fixed:true},
+ {key:"place",name:"위치",icon:"📍",fixed:true},
+ {key:"work",name:"내용",icon:"📄",fixed:true},
+ {key:"date",name:"일자",icon:"📅",fixed:true}
+];
+function defaultIconFor(key){return DEFAULT_BOARD_ITEMS.find(x=>x.key===key)?.icon||"💎";}
+function loadBoardItems(){
+ try{
+  const a=JSON.parse(appStorage.getItem("board_items_v1")||"null");
+  if(Array.isArray(a)&&a.length>=1&&a.length<=10)return a.map(x=>({...x,icon:x.icon||defaultIconFor(x.key)}));
+ }catch(e){}
+ return DEFAULT_BOARD_ITEMS.map(x=>({...x}));
+}
+let boardItems=loadBoardItems();
+function saveBoardItems(){appStorage.setItem("board_items_v1",JSON.stringify(boardItems));}
+function escHtml(v){return String(v??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function renderBoardItems(){
+ const active=new Set(boardItems.map(x=>x.key));
+ ["unit","status","place","work","date"].forEach(k=>{
+  const el=$(k), lab=$("label_"+k); if(!el||!lab)return;
+  const on=active.has(k); lab.style.display=on?"flex":"none";
+  const holder=el.closest(".row")||el; holder.style.display=on?(holder.classList.contains("row")?"flex":"block"):"none";
+ });
+ boardItems.forEach(it=>{const lab=$("label_"+it.key);if(lab){lab.textContent=it.name;lab.dataset.icon=it.icon||defaultIconFor(it.key);}});
+ const extras=$("extraRows"); extras.innerHTML="";
+ boardItems.filter(x=>!x.fixed).forEach(it=>{
+  const lab=document.createElement("label"); lab.textContent=it.name; lab.id="label_"+it.key;lab.dataset.icon=it.icon||"💎";
+  const row=document.createElement("div"); row.className="row dynamicRow";
+  const listBtn=document.createElement("button"); listBtn.type="button"; listBtn.textContent="목록"; listBtn.style.flex="0 0 72px";
+  listBtn.addEventListener("click",()=>pickExtra(it.key,it.name));
+  const inp=document.createElement("input"); inp.id=it.key; inp.placeholder="선택 또는 직접 입력";
+  inp.value=appStorage.getItem("board_extra_"+it.key)||"";
+  const saveNow=()=>{
+    const v=inp.value.trim();
+    appStorage.setItem("board_extra_"+it.key,inp.value);
+    if(v)addExtraCustom(it.key,v);
+  };
+  inp.addEventListener("input",()=>appStorage.setItem("board_extra_"+it.key,inp.value));
+  inp.addEventListener("change",saveNow);
+  inp.addEventListener("blur",saveNow);
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();saveNow();inp.blur();}});
+  row.append(listBtn,inp);
+  extras.append(lab,row);
+ });
+ const ed=$("itemEditorRows"); if(ed){ed.innerHTML="";boardItems.forEach((it,i)=>{
+  const r=document.createElement("div");r.className="row";r.style.marginBottom="6px";
+  const n=document.createElement("input");n.value=it.name;n.maxLength=12;n.setAttribute("aria-label","항목 이름");
+  n.addEventListener("change",()=>{const v=n.value.trim()||("항목 "+(i+1));boardItems[i].name=v;saveBoardItems();renderBoardItems();});
+  const iconSelect=document.createElement("select");iconSelect.className="iconSelect";iconSelect.setAttribute("aria-label","아이콘 선택");
+  BOARD_ICON_OPTIONS.forEach(opt=>{const o=document.createElement("option");o.value=opt.icon;o.textContent=opt.icon+" "+opt.name;if(opt.icon===(it.icon||defaultIconFor(it.key)))o.selected=true;iconSelect.appendChild(o);});
+  iconSelect.addEventListener("change",()=>{boardItems[i].icon=iconSelect.value;saveBoardItems();renderBoardItems();});
+  const del=document.createElement("button");del.type="button";del.textContent="삭제";del.style.flex="0 0 64px";
+  del.disabled=boardItems.length<=1;del.addEventListener("click",()=>{if(boardItems.length<=1)return;boardItems.splice(i,1);saveBoardItems();renderBoardItems();});
+  r.append(n,iconSelect,del);ed.append(r);
+ });}
+}
+$("addBoardItem").addEventListener("click",()=>{
+ if(boardItems.length>=10){alert("보드판 항목은 최대 10칸까지 가능합니다.");return;}
+ const key="extra_"+Date.now();boardItems.push({key,name:"새 항목",icon:"💎",fixed:false});saveBoardItems();renderBoardItems();
+});
+renderBoardItems();
+
+
+const boardSettingDefaults={fontScale:"100",boardWidthScale:"100",boardHeightScale:"100",photoResolution:"1600",jpegQuality:"0.80",boardPosition:"bl",boardColor:"white",boardFont:"Malgun Gothic"};
+Object.keys(boardSettingDefaults).forEach(id=>{
+ const el=$(id), saved=appStorage.getItem("board_setting_"+id);
+ if(el){el.value=saved!==null?saved:boardSettingDefaults[id];el.addEventListener("input",()=>{appStorage.setItem("board_setting_"+id,el.value);updateSettingText();});el.addEventListener("change",()=>appStorage.setItem("board_setting_"+id,el.value));}
+});
+function updateSettingText(){
+ if($("fontScaleText")) $("fontScaleText").textContent=$("fontScale").value+"%";
+ if($("boardWidthScaleText")) $("boardWidthScaleText").textContent=$("boardWidthScale").value+"%";
+ if($("boardHeightScaleText")) $("boardHeightScaleText").textContent=$("boardHeightScale").value+"%";
+}
+updateSettingText();
+$("resetBoardSettings").addEventListener("click",()=>{Object.entries(boardSettingDefaults).forEach(([id,v])=>{$(id).value=v;appStorage.setItem("board_setting_"+id,v);});updateSettingText();alert("보드판 설정을 기본값으로 복원했습니다.");});
+
+["unit","status"].forEach(id=>{
+ const old=appStorage.getItem("board_"+id);if(old)$(id).value=old;
+ $(id).addEventListener("input",()=>appStorage.setItem("board_"+id,$(id).value));
+});
+
+// 동·호수 간편입력:
+// 첫 숫자 1~5 = 1901동~1905동, 나머지 숫자 = 호수
+// 예) 1101→1901동 101호, 5101→1905동 101호, 51203→1905동 1203호
+function getDongPrefix(){
+ return (appStorage.getItem("board_dong_prefix")||"190").replace(/[^0-9]/g,"")||"190";
+}
+function autoUnit(){
+ let raw=$("unit").value.trim();
+ // 한글/동/호가 직접 입력되어 있으면 그대로 둠
+ if(/[가-힣]/.test(raw)) return;
+ let n=raw.replace(/[^0-9]/g,"");
+ if(n.length>=2 && /^[1-9]/.test(n)){
+   const dong=n.charAt(0);
+   const ho=n.slice(1);
+   const prefix=getDongPrefix();
+   $("unit").value=prefix+dong+"동 "+ho+"호";
+   appStorage.setItem("board_unit",$("unit").value);
+ }
+}
+$("unit").addEventListener("change",autoUnit);
+$("unit").addEventListener("blur",autoUnit);
+
+$("dongPrefix").value=getDongPrefix();
+$("saveDongPrefix").addEventListener("click",()=>{
+ const v=$("dongPrefix").value.replace(/[^0-9]/g,"");
+ if(!v){alert("동 고정 앞자리를 숫자로 입력해 주세요.");return;}
+ appStorage.setItem("board_dong_prefix",v);
+ $("dongPrefix").value=v;
+ alert("동 고정 앞자리를 "+v+"로 저장했습니다.");
+});
+$("clearUnit").addEventListener("click",()=>{
+ $("unit").value="";
+ appStorage.removeItem("board_unit");
+ $("unit").focus();
+});
+$("place").addEventListener("change",()=>{
+ addCustom("place",$("place").value);
+ $("work").value="";
+});
+$("place").addEventListener("blur",()=>addCustom("place",$("place").value));
+$("work").addEventListener("change",()=>addCustom("work",$("work").value));
+$("work").addEventListener("blur",()=>addCustom("work",$("work").value));
+$("status").addEventListener("change",()=>{addCustom("status",$("status").value);$("place").value="";$("work").value="";});
+$("status").addEventListener("blur",()=>addCustom("status",$("status").value));
+
+// ===== 새 항목별 독립 목록 =====
+function extraListKey(key){return "board_extra_list_v1_"+key;}
+function getExtraList(key){
+ try{const saved=appStorage.getItem(extraListKey(key));if(saved!==null){const a=JSON.parse(saved);if(Array.isArray(a))return a;}}catch(e){}
+ return [];
+}
+function saveExtraList(key,a){appStorage.setItem(extraListKey(key),JSON.stringify([...new Set(a.map(v=>String(v).trim()).filter(Boolean))]));}
+function addExtraCustom(key,value){value=(value||"").trim();if(!value)return;const a=getExtraList(key);if(!a.includes(value)){a.push(value);saveExtraList(key,a);}}
+function removeExtraCustom(key,value){saveExtraList(key,getExtraList(key).filter(v=>v!==value));}
+function pickExtra(key,name){
+ $("dlgTitle").textContent=(name||"새 항목")+" 선택";$("opts").innerHTML="";
+ getExtraList(key).forEach(v=>{
+   const box=document.createElement("div");box.style.display="flex";box.style.gap="4px";
+   const b=document.createElement("button");b.textContent=v;b.style.flex="1";
+   b.onclick=()=>{const inp=$(key);if(inp){inp.value=v;appStorage.setItem("board_extra_"+key,v);}dlg.close();};
+   const del=document.createElement("button");del.textContent="×";del.title="목록에서 삭제";del.style.flex="0 0 46px";del.style.fontSize="22px";
+   del.onclick=()=>{if(confirm("'"+v+"' 항목을 목록에서 삭제할까요?")){removeExtraCustom(key,v);pickExtra(key,name);}};
+   box.append(b,del);$("opts").appendChild(box);
+ });
+ const direct=document.createElement("button");direct.textContent="+ 직접 입력";
+ direct.onclick=()=>{dlg.close();const inp=$(key);if(inp){inp.value="";appStorage.setItem("board_extra_"+key,"");inp.focus();}};
+ $("opts").appendChild(direct);dlg.showModal();
+}
+
+function chooseValue(id,v){
+ if(id==="status"){
+   const old=$("status").value;$("status").value=v;appStorage.setItem("board_status",v);
+   if(old!==v){$("place").value="";$("work").value="";}
+ }else{
+   $(id).value=v;
+   if(id==="place") $("work").value="";
+ }
+ dlg.close();
+}
+function pick(id){
+ if((id==="place"||id==="work")&&!$("status").value.trim()){alert("먼저 입·퇴공을 선택하거나 입력해 주세요.");return;}
+ if(id==="work"&&!$("place").value.trim()){alert("먼저 위치를 선택하거나 입력해 주세요.");return;}
+ currentTarget=id;
+ const title=({status:"입·퇴공",place:"위치",work:"내용"})[id];
+ if(id==="status") $("dlgTitle").textContent=title+" 선택";
+ else if(id==="place") $("dlgTitle").textContent=title+" - "+$("status").value.trim()+" 선택";
+ else $("dlgTitle").textContent=title+" - "+$("status").value.trim()+" / "+$("place").value.trim()+" 선택";
+ $("opts").innerHTML="";
+ getList(id).forEach(v=>{
+   const box=document.createElement("div");box.style.display="flex";box.style.gap="4px";
+   const b=document.createElement("button");b.textContent=v;b.style.flex="1";b.onclick=()=>chooseValue(id,v);box.appendChild(b);
+   const del=document.createElement("button");del.textContent="×";del.title="목록에서 삭제";del.style.flex="0 0 46px";del.style.fontSize="22px";
+   del.onclick=()=>{if(confirm("'"+v+"' 항목을 목록에서 삭제할까요?")){removeCustom(id,v);pick(id);}};box.appendChild(del);
+   $("opts").appendChild(box);
+ });
+ const direct=document.createElement("button");direct.textContent="+ 직접 입력";
+ direct.onclick=()=>{dlg.close();$(id).value="";$(id).focus();};$("opts").appendChild(direct);dlg.showModal();
+}
+function loadFile(file){
+ if(!file)return;
+ const r=new FileReader();
+ r.onload=e=>{
+   const original=new Image();
+   original.onload=()=>{
+     // 폴드7 고화소 사진을 동산보드용 크기로 자동 축소
+     const MAX_SIDE=parseInt($("photoResolution").value,10)||0;
+     const scale=MAX_SIDE>0?Math.min(1,MAX_SIDE/Math.max(original.naturalWidth,original.naturalHeight)):1;
+     const w=Math.max(1,Math.round(original.naturalWidth*scale));
+     const h=Math.max(1,Math.round(original.naturalHeight*scale));
+     const tmp=document.createElement("canvas"); tmp.width=w; tmp.height=h;
+     const tctx=tmp.getContext("2d");
+     tctx.drawImage(original,0,0,w,h);
+     const reduced=tmp.toDataURL("image/jpeg",parseFloat($("jpegQuality").value)||0.80);
+     img.onload=()=>{
+       hasImage=true; made=false;
+       $("preview").src=reduced;
+       $("previewBox").style.display="flex";
+       $("preview").style.display="block";
+       $("empty").style.display="none";
+       $("resultCanvas").style.display="none";
+       setTimeout(()=>{ makeImage(); setTimeout(()=>saveImage(true),120); },80);
+     };
+     img.src=reduced;
+   };
+   original.src=e.target.result;
+ };
+ r.readAsDataURL(file);
+}
+$("camera").onchange=e=>loadFile(e.target.files[0]);
+$("gallery").onchange=e=>loadFile(e.target.files[0]);
+
+function fitFont(ctx,text,maxWidth,start){
+ let s=start; while(s>18){ctx.font=s+'px '+JSON.stringify($("boardFont").value||"Malgun Gothic")+',sans-serif';if(ctx.measureText(text).width<=maxWidth)return s;s-=2;}return s;
+}
+function makeImage(){
+ if(!hasImage){alert("먼저 사진을 촬영하거나 불러와 주세요.");return;}
+ const c=$("resultCanvas"),ctx=c.getContext("2d");
+ c.width=img.naturalWidth;c.height=img.naturalHeight;ctx.drawImage(img,0,0,c.width,c.height);
+ const rows=boardItems.map(item=>{
+   let v="";
+   if(item.key==="date") v=$("date").value.replaceAll("-",".");
+   else { const el=$(item.key); v=el?el.value:""; }
+   return [item.name,v];
+ });
+ // 화면 비율과 무관하게 원본 사진 기준으로 읽기 좋은 크기
+ const fontMul=(parseInt($("fontScale").value,10)||100)/100;
+ const widthMul=(parseInt($("boardWidthScale").value,10)||100)/100;
+  const heightMul=(parseInt($("boardHeightScale").value,10)||100)/100;
+  const baseW=Math.max(500,Math.min(c.width*.36,850));
+  const baseRowH=Math.max(70,Math.min(c.height*.075,120));
+  const W=Math.max(250,Math.min(c.width*.95,baseW*widthMul));
+  const rowH=Math.max(35,baseRowH*heightMul);
+ const H=rowH*rows.length, marginX=Math.max(0,c.width*.012), marginY=Math.max(0,c.height*.018), pos=$("boardPosition").value;
+ const x=(pos==="br"||pos==="tr")?Math.max(0,c.width-W-marginX):marginX;
+ const y=(pos==="tl"||pos==="tr")?marginY:Math.max(0,c.height-H-marginY), labelW=W*.38;
+ const boardColor=$("boardColor").value;
+ if(boardColor!=="frame"){ctx.fillStyle=boardColor==="transparent"?"rgba(255,255,255,.58)":"rgba(255,255,255,.94)";ctx.fillRect(x,y,W,H);}
+ ctx.strokeStyle="#555";ctx.lineWidth=Math.max(2,c.width/1000);
+ ctx.strokeRect(x,y,W,H);ctx.beginPath();ctx.moveTo(x+labelW,y);ctx.lineTo(x+labelW,y+H);ctx.stroke();
+ for(let i=1;i<rows.length;i++){ctx.beginPath();ctx.moveTo(x,y+i*rowH);ctx.lineTo(x+W,y+i*rowH);ctx.stroke();}
+ ctx.fillStyle="#111";ctx.textBaseline="middle";
+ rows.forEach((r,i)=>{
+   let fs=fitFont(ctx,r[0],labelW-20,rowH*.48*fontMul);ctx.font=fs+'px '+JSON.stringify($("boardFont").value||"Malgun Gothic")+',sans-serif';ctx.fillText(r[0],x+12,y+i*rowH+rowH/2);
+   fs=fitFont(ctx,r[1]||"",W-labelW-22,rowH*.48*fontMul);ctx.font=fs+'px '+JSON.stringify($("boardFont").value||"Malgun Gothic")+',sans-serif';ctx.fillText(r[1]||"",x+labelW+12,y+i*rowH+rowH/2);
+ });
+ made=true;$("preview").style.display="none";$("previewBox").style.display="none";c.style.display="block";
+}
+function saveImage(auto=false){
+ if(!made) makeImage(); if(!made)return;
+ const c=$("resultCanvas");c.toBlob(blob=>{
+   const d=$("date").value.replaceAll("-","");
+   const t=new Date(), hh=String(t.getHours()).padStart(2,"0"), mm=String(t.getMinutes()).padStart(2,"0"), ss=String(t.getSeconds()).padStart(2,"0");
+   const filename=( $("unit").value || "동산보드판")+"_"+d+"_"+hh+mm+ss+".jpg";
+   if(window.Android && Android.saveImage){
+     const reader=new FileReader(); reader.onloadend=()=>Android.saveImage(reader.result,filename); reader.readAsDataURL(blob);
+   }else{
+     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+   }
+   $("camera").value=""; $("gallery").value="";
+ }, "image/jpeg",parseFloat($("jpegQuality").value)||0.80);
+}
+</script>
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+</body></html>

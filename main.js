@@ -75,7 +75,18 @@ function createWindow() {
     }
   });
   mainWindow.setMenuBarVisibility(false);
-  mainWindow.loadFile(path.join(__dirname, 'app', 'index.html'));
+  const candidates = [
+    path.join(__dirname, 'app', 'index.html'),
+    path.join(__dirname, 'index.html')
+  ];
+  const page = candidates.find(candidate => fs.existsSync(candidate));
+  if (page) {
+    mainWindow.loadFile(page).catch(error => {
+      mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(`<h2 style="font-family:sans-serif;padding:24px">광제보드 화면을 불러오지 못했습니다.<br><small>${error.message}</small></h2>`)}`);
+    });
+  } else {
+    mainWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent('<h2 style="font-family:sans-serif;padding:24px">광제보드 화면 파일이 설치되지 않았습니다.</h2>'));
+  }
 }
 
 app.whenReady().then(() => {
