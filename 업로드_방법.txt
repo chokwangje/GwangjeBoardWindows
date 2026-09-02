@@ -1,0 +1,11 @@
+광제보드 EXE 만들기
+
+1. 이 폴더 안의 파일과 폴더를 GitHub 새 저장소에 전부 업로드합니다.
+2. 반드시 .github 폴더도 함께 올려야 합니다.
+3. GitHub의 Actions 탭을 누릅니다.
+4. 광제보드 Windows 설치파일 만들기가 성공할 때까지 기다립니다.
+5. 작업 화면 아래 Artifacts의 GwangjeBoard-Windows-Installer를 다운로드합니다.
+6. 압축을 풀고 GwangjeBoard-Setup-1.0.0.exe를 실행합니다.
+
+데이터 저장 위치:
+문서\광제보드\gwangje-board-data.json

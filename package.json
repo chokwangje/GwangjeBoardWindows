@@ -1,0 +1,43 @@
+{
+  "name": "gwangje-board-desktop",
+  "version": "1.0.0",
+  "description": "광제보드 Windows 데스크톱 앱",
+  "main": "main.js",
+  "author": "chokwangje",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.chokwangje.gwangjeboard.desktop",
+    "productName": "광제보드",
+    "asar": true,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "artifactName": "GwangjeBoard-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "광제보드",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
